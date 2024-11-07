@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nachhaltiges Web Design</title>
+    <link rel="icon" type="image/x-icon" href="../icons/world.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+
+
+    <style>
+        /* Optimierte Abstände */
+        section {
+            min-height: auto;
+            padding: 4rem 0;
+        }
+
+        #home {
+            padding: 2rem 0;
+        }
+
+        /* Verbesserte Lesezeichen-Darstellung */
+        .bookmark-list {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 200px;
+            border: 1px solid rgba(25, 135, 84, 0.2);
+        }
+
+        .bookmark-list .bookmark-title {
+            font-size: 0.9rem;
+            color: #198754;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #198754;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .bookmark-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bookmark-list li {
+            margin-bottom: 8px;
+        }
+
+        .bookmark-list a {
+            color: #333;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        .bookmark-list a:hover {
+            color: #198754;
+            background: rgba(25, 135, 84, 0.1);
+            border-color: rgba(25, 135, 84, 0.2);
+        }
+
+        .bookmark-list a.active {
+            font-weight: bold;
+            color: #198754;
+            background: rgba(25, 135, 84, 0.1);
+            border-color: rgba(25, 135, 84, 0.2);
+        }
+
+        /* Hero Section Optimierung */
+        .hero-section {
+            background-color: #f8f9fa;
+            padding: 3rem 0;
+            margin-top: 56px;
+        }
+
+        .hero-section h1 {
+            color: #198754;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p.lead {
+            color: #666;
+        }
+
+        .customBorder {
+            border: 2px solid #61686B;
+            transition: text-shadow 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .customBorder:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+            border: 2px solid #198754;
+
+        }
+
+        .customBorder:hover .cusIcon,
+        .customBorder:hover .cusTitle {
+            color: #198754 !important;
+        }
+
+        .link {
+            cursor: pointer;
+        }
+
+        .customBorder {
+            background-color: #f8f9fa;
+        }
+
+        .cusIcon {
+            font-size: 60px;
+            color: #4E757E;
+        }
+
+        .cusTitle {
+            color: #546A7B;
+            text-align: left;
+        }
+
+        .box>* {
+            flex: 1 1 33.33%;
+            /* Nimmt ein Drittel der Zeile ein */
+            max-width: 33.33%;
+            /* Stellt sicher, dass jedes Element maximal ein Drittel der Zeile einnimmt */
+        }
+
+        img {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            display: block;
+            border: 2px solid #ababab;
+            box-shadow: 1px 2px 3px 1px #ccc;
+        }
+
+        .label {
+            display: block;
+            margin-top: 5px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            .box>* {
+                flex: 1 1 50%;
+                /* Zwei pro Zeile auf Tablets */
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .box>* {
+                flex: 1 1 100%;
+                /* Ein Element pro Zeile auf kleinen Bildschirmen */
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bookmark-list {
+                display: none;
+            }
+
+            section {
+                padding: 3rem 0;
+            }
+        }
+        
+    </style>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">Nachhaltiges Web</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#importance">Wichtigkeit</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#users">Für Nutzer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#developers">Für Entwickler</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bookmark-list">
+        <div class="bookmark-title">Lesezeichen</div>
+        <ul>
+            <li><a href="#home" class="bookmark-link">Start</a></li>
+            <li><a href="#importance" class="bookmark-link">Wichtigkeit</a></li>
+            <li><a href="#users" class="bookmark-link">Für Nutzer</a></li>
+            <li><a href="#developers" class="bookmark-link">Für Entwickler</a></li>
+        </ul>
+    </div>   
+
+    
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="bg-light py-5">
+            <div class="container">
+                <div class="row ">
+                    <div class="col-lg-8 ">
+                        <h1 class="display-4 mb-4">Nachhaltigkeit im Web</h1>
+                        <p class="lead">Wie unsere digitale Fußabdruck die Umwelt beeinflusst. </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wichtigkeit Section -->
+        <section id="importance" class="py-5">
+            <div class="container">
+                <h2 class=" mb-4">Die Wichtigkeit nachhaltiger Webentwicklung</h2>
+                <div class="row">
+                    <div class="col-lg-10">
+                        <h3 class="h5 mb-3">Der digitale CO2-Fußabdruck</h3>
+                        <div>
+                            Um unsere Umwelt noch mehr zu schonen und zu schützen, müssen wir weiterhin Maßnahmen
+                            ergreifen. Dabei spielt die Reduzierung der Schadstoffe, insbesondere des Treibhausgases
+                            Kohlendioxid, eine zentrale Rolle. Die Zahl der Menschen, die mit dem Internet verbunden
+                            sind, wächst rapide. <a
+                                href="https://news-blogs.cisco.com/emea/de/2020/02/21/cisco-2023-basieren-ueber-18-prozent-aller-mobilen-verbindungen-auf-5g/"
+                                target="_blank" title="Quelle: Cisco">Cisco</a> prognostiziert, dass bis zum Jahr 2023
+                            zwei Drittel der Weltbevölkerung vernetzt sein werden. In einer Zeit, in der wir auf eine
+                            kohlenstofffreie Wirtschaft hinarbeiten müssen, wächst unser Hunger nach Daten und
+                            Webdiensten und damit auch unsere Internetemissionen.
+
+                            <div>
+                                <img src="1.jpeg" style="width: 50%;" />
+                                <label class="label">Quelle: <a
+                                        href="https://de.statista.com/infografik/26873/co2-vergleich-dsl-und-glasfasernetz/"
+                                        target="_blank" title="Quelle: Statista"> Statista </a></label>
+                            </div>
+                            <br>
+                            Die Grafiken verdeutlichen den enormen Energieverbrauch und die CO₂-Emissionen des Internets
+                            im globalen Vergleich. In der ersten Grafik wird der Stromverbrauch des Internets in
+                            Deutschland dargestellt, der 13 Terawattstunden (TWh) pro Jahr beträgt. Zum Vergleich: Der
+                            gesamte jährliche Stromverbrauch aller privaten Haushalte in München liegt bei 2,5 TWh. Dies
+                            zeigt, dass der Betrieb von Netzwerken und Rechenzentren in Deutschland einen erheblichen
+                            Energieaufwand erfordert, der mehrere Großstädte versorgen könnte. Die zweite Grafik
+                            veranschaulicht die CO₂-Bilanz des Internets weltweit. Wäre das Internet ein eigenständiges
+                            Land, würde es beim CO₂-Ausstoß den sechsten Platz belegen, knapp hinter Japan und vor Iran.
+                            Der Anteil des Internets am weltweiten CO₂-Ausstoß beträgt 2,8 %. Zum Vergleich: China und
+                            die USA stehen an der Spitze der Emissionen mit 30,7 % bzw. 13,6 %. Diese Einordnung macht
+                            den enormen Einfluss der Internetnutzung auf den Klimawandel deutlich und zeigt die
+                            Dringlichkeit nachhaltiger Ansätze in der digitalen Welt auf.
+
+                            <h3 class="h5 mb-3 mt-4">Wie groß ist der ökologische Fußabdruck einer Website?</h3>
+                            <div>
+                                Jede Webseitenbesuch, jedes eintreffende E-Mail oder Video-Streaming generiert
+                                Datenmengen, die eine nennenswerte und wachsende Größe in der globalen Klimabilanz
+                                darstellen. Der CO₂-Ausstoß einer Website wird anhand der Energie gemessen, die sie
+                                verbraucht. Jeder Besuch einer Website führt zu Datenverkehr zum und vom Server der
+                                Website. Die durchschnittliche Website erzeugt bei jedem Seitenaufruf 1,76 g CO₂, siehe
+                                den vollständigen <a href="https://www.mdpi.com/2078-1547/6/1/117" target="_blank"
+                                    title="Quelle: MDPI">Artikel</a> von Andrae und Edler. Eine Website mit Videos und
+                                hochauflösenden Bildern erfordert mehr Datenverkehr und damit mehr Energie pro Besuch.
+                                Bei einer Website mit durchschnittlich 10.000 Seitenaufrufen pro Monat verursacht der
+                                Energieverbrauch einen jährlichen Ausstoß von 211 kg CO₂. Das entspricht 1055 km
+                                Autofahrt.
+                            </div>
+
+                        </div>
+
+                        <h3 class="h5 mb-3 mt-4">Wachsende Bedeutung</h3>
+                        <div>
+                            Durch die zunehmende Digitalisierung, die Ausbreitung von Online-Diensten und die steigende
+                            Anzahl vernetzter Menschen wächst die Zahl der im Internet veröffentlichten Websites rasant.
+                            Dies führt zu einem erheblichen Anstieg des Energieverbrauchs, der für den Betrieb dieser
+                            Websites erforderlich ist. Aus nachhaltiger Sicht ist es daher von großer Bedeutung, den
+                            CO₂-Fußabdruck zu untersuchen und gegebenenfalls zu optimieren oder zu reduzieren.
+
+                            <a href="https://www.ionos.de/digitalguide/websites/webdesign/nachhaltiges-webdesign/"
+                                target="_blank" title="Quelle: Ionos">Nachhaltige Webentwicklung</a> zielt darauf ab,
+                            den Energieverbrauch von Webseiten und Online-Diensten zu minimieren. Dies kann durch
+                            verschiedene Maßnahmen erreicht werden, wie die Optimierung von Code, die Reduzierung der
+                            Dateigrößen von Bildern und Videos sowie die Nutzung energieeffizienter Server. Ein
+                            bewusster Umgang mit digitalen Ressourcen trägt nicht nur zur Reduzierung des
+                            CO2-Fußabdrucks bei, sondern verbessert auch die Performance und Benutzerfreundlichkeit von
+                            Webseiten.<br><br>
+
+                            Unternehmen und Entwickler sind daher gefordert, umweltfreundliche Praktiken in ihre
+                            digitalen Projekte zu integrieren. Durch die Implementierung nachhaltiger Webentwicklung
+                            können sie einen bedeutenden Beitrag zum Klimaschutz leisten und gleichzeitig die Effizienz
+                            ihrer Online-Präsenzen steigern. In Zeiten des Klimawandels und der Ressourcenknappheit ist
+                            die nachhaltige Gestaltung digitaler Produkte und Dienstleistungen von großer Bedeutung für
+                            eine nachhaltige Zukunft.
+                        </div>
+
+                        <h3 class="h5 mb-3 mt-4">Mögliche Messtools</h3>
+                        <div>
+                            <div>
+                                <p>1. Website Carbon Calculator</p>
+                                <p>Eins der ersten veröffentlichten Online-Tools ist Website Carbon Calculator (WCC),
+                                    mit
+                                    dem mit dem die CO2-Emission einer Webseite abgeschätzt werden kann. Veröffentlicht
+                                    wurde das Tool im Jahr 2018 und ist kostenlos in der Verwendung. Da es keine genauen
+                                    Informationen über die Menge der vom Server übertragenen Daten geliefert werden
+                                    können,
+                                    kann das Tool den gesamten Datentransfer einer Domain abschätzen. Da WCC auf die
+                                    globalen ProviderDatenbank der Green Web Foundation einen Zugriff hat, ist WCC zudem
+                                    in der Lage eine Aussage treffen, ob die getestete Domain auf einem Server liegt,
+                                    der mit
+                                    erneuerbaren Energien betrieben wird</p>
+
+                                <div>
+                                    <img src="WCC_ai.fh.erfurt.de.png" style="width: 50%;"
+                                        alt="Website Carbon Calculator Beispiel" />
+                                    <label class="label">Quelle: <a
+                                            href="https://www.websitecarbon.com/website/ai-fh-erfurt-de/"
+                                            target="_blank" title="Quelle: Website Carbon Calculator"> Website Carbon
+                                            Calculator </a></label>
+                                </div><br>
+                                Die Bildschirmaufnahme zeigt eine beispielhafte Messung der Website des Studiengangs
+                                Angewandte
+                                Informatik der Fachhochschule Erfurt. Obwohl die Webseite der Angewandten Informatik
+                                einfach und leicht erscheint, ist dies leider nicht der Fall. Durch die Berechnung der
+                                WCC liegt die gemessene Webseite weit unter dem globalen Durchschnitt der CO2-Emissionen
+                                von Webseitenaufrufen mit einem F-Rating. Das
+                                bedeutet auch, dass die Seite umweltschädlicher ist als 88% aller Webseiten weltweit.
+                                Bei
+                                jedem Besuch der Seite werden 1,87 g CO2 ausgestoßen. Dies liegt unter anderem daran,
+                                dass die vom Server übertragenen Daten sehr groß sind. Außerdem nutzt der Server, auf
+                                dem die Website gehostet wird, konventionelle Energiequellen. Würde die Website auf ein
+                                umweltfreundliches Hosting umgestellt, könnte der CO2-Ausstoß um 9% reduziert werden.
+                                Außerdem rechnet WCC mit einer monatlichen Besucherzahl von 10.000. Seitenaufrufen
+                                produziert
+                                die Website 224,84 kg CO2 pro Jahr. Diese Menge entspricht den CO2-Emissionen,
+                                die beim Erhitzen von Wasser für 30.466 Tassen Tee entstehen. Der Energieverbrauch
+                                beträgt 509 kWh, was 42.391 vollständigen Aufladungen eines durchschnittlichen
+                                Smartphones
+                                oder einer Fahrt von 3.256 km mit einem Elektroauto entspricht. Um diese jährlichen
+                                CO2-Emissionen auszugleichen, müssten 11 Bäume gepflanzt werden.
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Für Nutzer Section -->
+        <section id="users" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="mb-4">Was können Nutzer tun?</h2>
+                <ul>
+                    <li><h3 class="h5">Effizientes Surfen:</h3>
+                        <p>Eine wertvolle Möglichkeit, um aktiv zum Umweltschutz beizutragen, ist die stärkere Bewusstmachung des eigenen Surfverhaltens. Dies beinhaltet das Limitieren des Surfens nur auf Seiten, die wirklich gebraucht werden und das Vermeiden des Ladens von unnötigen Inhalten. Beispielsweise kann das regelmäßige Säubern der Lesezeichen im Browser oder das Schließen nicht verwendeter Tabs den Suchverkehr reduzieren. Ebenfalls in die Liste dieser möglichen Vorgehensweisen gehört das häufigere Nutzen von Offline-Modi oder das Speichern von oft benötigten Infos, da dadurch der Energieverbrauch im Netz sinkt Wir sehen, dass jeder Klick, der nicht getätigt wird, die hiesigen Server entlastet und der Umwelt zur besseren Bilanz verhilft.</p>
+
+                    </li>
+                    <li><h3 class="h5">Nachhaltige Suchmaschinen verwenden:</h3>
+                        <p>Eine umweltfreundliche Alternative zu Google finden Nutzer bei <a href="https://www.ecosia.org/" target="_blank">Ecosia</a> oder <a href="https://www.gexsi.com/" target="_blank">Gexsi</a>. Der Vorteil: Jede ihrer Suchanfragen unterstützt ein Umweltschutzprojekt. Die Suchmaschinenbetreiber investieren für jeden Aufruf in eigene Klimaschutzprojekte: Ecosia beispielsweise fördert mit einem Teil seiner Werbeeinnahmen die Aufforstung von Wäldern, während Gexsi soziale und ökologische Projekte unterstützt, die jeweils die Idee einer nachhaltigeren Welt ins Zentrum ihres Handelns stellen. So kann sich jeder User einfach und bequem am Klimaschutz beteiligen, ohne auf Komfort oder Relevanz der Suchergebnisse verzichten zu müssen.</p>
+
+                    </li>
+                    <li><h3 class="h5">Bildung und Sensibilisierung:</h3>
+                        <p>Um nachhaltige Entscheidungen zu treffen, muss man zuerst verstehen, wie sich das eigene Verhalten im Internet auf die Umwelt auswirkt. Wenn Menschen mehr darüber wissen, wie Technologien die Umwelt beeinflussen, können sie ein Bewusstsein dafür entwickeln, Energie zu sparen. Workshops, Blogs oder Beiträge in sozialen Medien können helfen, Menschen zu inspirieren und gemeinsam Lösungen zu finden. Erst wenn das Wissen beherscht ist, können Veränderungen vorgenommen werden und Schritt für Schritt auf neue, umweltfreundliche Technologien umzusteigen.</p>
+
+                    </li>
+                    <li><h3 class="h5">Bewusster Medienkonsum:</h3>
+                        <p>Das Übetragen und Abspielen von Videos sowie Musik verbraucht große Mengen an Daten und Energie. Energie sparen kann man zum Beispiel, indem man die Streaming-Qualität reduziert, auf WLAN-Verbindungen anstelle von <a href="https://verbraucherrat.at/was-braucht-mehr-strom-wlan-oder-mobile-daten/#:~:text=Der%20Stromverbrauch%20von%20mobilen%20Daten%20ist%20im%20Allgemeinen,sein%20muss%2C%20um%20eine%20kontinuierliche%20Daten%C3%BCbertragung%20zu%20gew%C3%A4hrleisten.">mobilen Daten</a> umsteigt, Inhalte im Vorfeld für die Offline-Nutzung lässt. Der bewusste Mediengenuss, das zielgerichtete Auswählen von Inhalten und das Vermeiden des ewigen Scrollens sind außerdem Methoden, um den digitalen Fußabdruck zu reduzieren. Neben dem Klimaschutz bietet der bewusste Umgang mit Medien noch einen weiteren Vorteil: Die Verringerung der Abhängigkeit von den sozialen Medien führt zu einer Verbesserung des persönlichen Wohlbefindens und fördert die Schaffung von schönen, bleibenden Momenten.</p>
+
+                    </li>
+                    <li><h3 class="h5">Lokale Speicherung bevorzugen:</h3>
+                        Das Speichern von Daten auf lokalen Geräten statt in der Cloud reduziert den Bedarf an ständigen Datenübertragungen. Externe Festplatten oder USB-Sticks sind energieeffiziente Alternativen, um große Dateien oder Backups zu sichern. Durch die lokale Speicherung werden die Server entlastet, was den Energieverbrauch in Rechenzentren senkt. Zudem erhöht dies die Datensicherheit und den Schutz der Privatsphäre.</p>
+
+                    </li>
+                    <li><h3 class="h5">Verwendung energieeffizienter Geräte:</h3>
+                        <p>Die Wahl von Geräten mit geringem Stromverbrauch, wie energieeffiziente Monitore oder Laptops mit Energiesparmodus, kann den persönlichen Energieverbrauch deutlich reduzieren. Auch das regelmäßige Abschalten von Geräten statt des Stand-by-Modus spart Energie. Durch die längere Nutzung und Pflege der eigenen Hardware wird zudem der Bedarf an Neuproduktionen verringert, was Ressourcen schont und Müll reduziert.</p>
+                    </li>
+                    <li><h3 class="h5">Förderung nachhaltiger Dienste:</h3>
+                        <p>Die Verwendung von Anwendungen, die nachhaltige Praktiken fördern oder selbst umweltfreundlich sind, kann einen Unterschied machen. Zum Beispiel gibt es ein Tool für den Chrome-Browser namens GreenWave, das den CO2-Fußabdruck einer Website ermittelt. Außerdem hat es die Möglichkeit, Elemente auf einer Webseite zu verfolgen, wie z. B.. Bilder, zu blockieren, um die Datenübertragung und damit den Energieverbrauch jeder Anfrage zu verringern. </p>
+
+                    </li>
+                    <li><h3 class="h5">Bewusster Umgang mit E-Mails:</h3>
+                        <p>Laut dem <a href="https://carbonliteracy.com/the-carbon-cost-of-an-email-2/" target="_blank" title="Carbon Literacy Project">Carbon Literacy Project</a> verursacht eine Standard-E-Mail etwa 4 g CO2, während eine E-Mail mit umfangreichem Anhang bis zu 50 g CO2 erzeugen kann. Das Versenden eines 1 MB großen Urlaubsfotos an zehn Freunde entspricht dabei dem CO2-Ausstoß einer 500 Meter langen <a href="https://www.123effizientdabei.de/der-co2-fussabdruck-von-e-mails-eine-unterschaetzte-umweltbelastung/" target="_blank" title="Autofahrt">Autofahrt</a>. Deswegen ist das regelmäßige Löschen unnötiger E-Mails, das Abbestellen von Spam und Newslettern sowie das Überlegen, ob eine E-Mail wirklich nötig ist, eine effektive Methode, um den Datenverkehr zu reduzieren. Ein aufgeräumter Posteingang spart nicht nur Energie, sondern erhöht auch die persönliche Produktivität.</p>
+
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Für Entwickler Section -->
+        <section id="developers" class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-3">Was können Entwickler tun?</h2>
+                <div class="row mt-5 d-flex flex-wrap box">
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-images ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Bilder optimal einsetzen</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-play-btn ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Videos achtsam einsetzen</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-moon ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Darkmode</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-tablet-landscape ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Optimierung für Endgeräte</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-hourglass-split ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Lazy Loading</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-database-check ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Nutzung von Caching-Techniken</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 shadow-sm customBorder">
+                            <div class="card-body text-center d-flex flex-column align-items-start">
+                                <p class="mt-3" style="height: 100px;"></p>
+                                <i class="bi bi-tree ms-3 cusIcon"></i>
+                                <h5 class="h5 mb-3 mt-2 ms-3 cusTitle">Green Web-Hosting</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        
+        
+        <!-- Modal -->
+        <div id="modal-content" style="display: none;"></div>
+
+        <div class="modal fade" id="developerModal" tabindex="-1" aria-labelledby="developerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+            <div class="modal-content" >
+                <!-- Header -->
+                <div class="modal-header">
+                <h5 class="modal-title" id="developerModalLabel">Titel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <!-- Body -->
+                <div class="modal-body">
+                Inhalt wird hier angezeigt.
+                </div>
+            </div>
+            </div>
+        </div>
+  
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">Check out the chrome <a href="https://github.com/1chahin/GreenWave" style="color: #78a1fa;"
+                    target="_blank">GreenWave</a>🌱</p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="index.js" ></script>
+</body>
+
+</html>
