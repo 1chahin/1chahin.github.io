@@ -72,6 +72,14 @@ const tileContent = {
     "Green Web-Hosting": `
         <p>
            In der Anleitung wurde der schnellwachsende Stromverbrauch des Internets erwähnt. Daher ist die Wahl von Green Hosting ein wesentlicher Bestandteil einer nachhaltigen Webentwicklung, da es dazu beiträgt, den ökologischen Fußabdruck von Webseiten zu reduzieren, indem die Energiequelle zum Betreiben des Rechenzentrums bzw. der Webseite aus erneuerbaren Energien stammt.
+            <div>
+                <img src="GreenHosting.jpg" style="width: 100%;"
+                    alt="Beispiel für Nutzung von Abwärme eines Rechenzentrums" />
+                <label class="label">Abbildung 9 Beispiel für <a href="https://www.youtube.com/watch?v=3cNskyuofRw" target="_blank" title="Nutzung von Abwärme eines Rechenzentrums">Nutzung von Abwärme eines Rechenzentrums</a></label>
+            </div><br>
+            Die Abbildung 9 stellt ein weiterer Ansatz zur Steigerung der Klimafreundlichkeit eines Rechenzentrums dar. Dies ist die Nutzung der Abwärme des Kühlsystems. Dabei wird die Abwärme, die bei der Kühlung der Server entsteht, an eine Wärmepumpe weitergeleitet. Diese erhöht die Temperatur und macht sie so zur Heizung von Gebäuden nutzbar. Dieser Ansatz zeigt, wie erneuerbare Energien genutzt werden können und wie verschiedene Systeme effizient zusammenarbeiten.<br><br>
+
+            <a href="https://www.gsi.de/forschungbeschleuniger/forschung_ein_ueberblick/green-it-cube" target="_blank" title="Green IT Cube">Green IT Cube</a>  ist ein Beispiel für die Nutzung der Abwärme eines Rechenzentrums. Gekühlt werden die Rechner mit Wasser statt mit Luft. Dadurch beträgt der Energieaufwand für die Kühlung weniger als sieben Prozent der elektrischen Rechenleistung. Das besondere an diesem Kühlsystem ist, dass die erzeugte Abwärme genutzt wird, um ein Büro- und Kantinengebäudes zu heizen.
         </p>
     `
 };
@@ -160,45 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 targetSection.scrollIntoView({
                     behavior: 'smooth'
                 });
+                
             }
         });
-    });
-
-    document.getElementById('generate-pdf-btn').addEventListener('click', function() {
-        // Klonen des Hauptinhalts
-        const mainContent = document.querySelector('main').cloneNode(true);
-    
-        // Anpassung des "Für Entwickler"-Abschnitts
-        const developersSection = mainContent.querySelector('#developers');
-    
-        // Entfernen der bestehenden Kacheln
-        const tileContainer = developersSection.querySelector('.row');
-        tileContainer.innerHTML = '';
-    
-        // Hinzufügen von Titeln und Inhalten jeder Kachel
-        for (const title in tileContent) {
-            const titleElement = document.createElement('h3');
-            titleElement.innerText = title;
-            titleElement.classList.add('mt-4');
-    
-            const contentElement = document.createElement('div');
-            contentElement.innerHTML = tileContent[title];
-    
-            tileContainer.appendChild(titleElement);
-            tileContainer.appendChild(contentElement);
-        }
-    
-        // PDF-Optionen festlegen
-        const opt = {
-            margin:       10,
-            filename:     'nachhaltiges_web.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-    
-        // Generieren des PDFs
-        html2pdf().set(opt).from(mainContent).save();
     });
     
 });
