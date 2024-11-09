@@ -93,15 +93,47 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalBody = modalElement.querySelector('.modal-body');
     const modal = new bootstrap.Modal(modalElement);
 
+    // Funktion, um das Modal zu öffnen und die URL zu aktualisieren
+    function openModalWithUrl(title, content) {
+        modalTitle.innerText = title;
+        modalBody.innerHTML = content;
+        modal.show();
+
+        // URL aktualisieren
+        const url = new URL(window.location);
+        url.hash = encodeURIComponent(title);
+        window.history.pushState({}, '', url);
+    }
+
     developerTiles.forEach(tile => {
-        tile.addEventListener('click', function() {
+        tile.addEventListener('click', function () {
             const title = tile.querySelector('.cusTitle').innerText.trim();
             const content = tileContent[title] || "<p>Kein Inhalt verfügbar.</p>";
-            modalTitle.innerText = title;
-            modalBody.innerHTML = content;
-            modal.show();
+            openModalWithUrl(title, content);
         });
     });
+
+    // Überprüfen, ob eine Kachel in der URL referenziert ist, und diese automatisch anzeigen
+    const currentHash = decodeURIComponent(window.location.hash.substring(1));
+    if (currentHash && tileContent[currentHash]) {
+        openModalWithUrl(currentHash, tileContent[currentHash]);
+    }
+
+    // Zurücksetzen der URL, wenn das Modal geschlossen wird
+    modalElement.addEventListener('hidden.bs.modal', function () {
+        const url = new URL(window.location);
+        url.hash = '';
+        window.history.pushState({}, '', url);
+    });
+    // developerTiles.forEach(tile => {
+    //     tile.addEventListener('click', function() {
+    //         const title = tile.querySelector('.cusTitle').innerText.trim();
+    //         const content = tileContent[title] || "<p>Kein Inhalt verfügbar.</p>";
+    //         modalTitle.innerText = title;
+    //         modalBody.innerHTML = content;
+    //         modal.show();
+    //     });
+    // });
 
     const sections = document.querySelectorAll('section');
     const bookmarkLinks = document.querySelectorAll('.bookmark-link');
