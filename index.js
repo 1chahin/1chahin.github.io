@@ -92,7 +92,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalTitle = modalElement.querySelector('.modal-title');
     const modalBody = modalElement.querySelector('.modal-body');
     const modal = new bootstrap.Modal(modalElement);
+    const printBtn = document.querySelector('.printBtn'); 
 
+    printBtn.addEventListener('click', function() {
+
+        const link = document.createElement('a'); 
+        link.href = './Nachhaltigkeit im Web.pdf'; 
+        link.target = '_blank'; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
     // Funktion, um das Modal zu öffnen und die URL zu aktualisieren
     function openModalWithUrl(title, content) {
         modalTitle.innerText = title;
